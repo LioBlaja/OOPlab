@@ -30,7 +30,15 @@ abstract class Project implements Risky{
         this.fonduri.add(Long.valueOf(fond));
     }
     public void addMember(Member m) {
-        this.participanti.add(m);
+        if(this instanceof ProiectMilitar){
+            if (this.participanti.size() < ((ProiectMilitar) this).getMaxNumberOfMembers()){
+                this.participanti.add(m);
+            }else {
+                System.out.println("limit reached");
+            }
+        }else {
+            this.participanti.add(m);
+        }
     }
     public double getFonduriTotal(){
         int suma = 0;
@@ -61,7 +69,11 @@ class ProiectComercial extends Project implements Risky{
     public ProiectComercial(String titlu,String obiectiv,int varstaManager,String numeManager,
                            int numarEchipe,String deadLine){
         super(titlu,obiectiv,varstaManager,numeManager);
-        this.numarEchipe = numarEchipe;
+        if (numarEchipe < this.participanti.size()){
+            this.numarEchipe = numarEchipe;
+        }else {
+            System.out.println("conditie nerespectata");
+        }
         this.deadLine = deadLine;
         this.fonduriMarketing = (long)super.getFonduriTotal() / 2;
     }
@@ -100,7 +112,7 @@ class ProiectOpenSource extends Project implements Risky{
 class ProiectMilitar extends Project implements Risky{
     private String password;
     private String deadLine;
-    private int maxNumberOfMembers = 15;
+    private int maxNumberOfMembers = 15; // not used
     public ProiectMilitar(String titlu,String obiectiv,int varstaManager,String numeManager,
                              String password,String deadLine){
         super(titlu,obiectiv,varstaManager,numeManager);
@@ -109,6 +121,10 @@ class ProiectMilitar extends Project implements Risky{
     }
     public double getRisk(){
         return this.participanti.size() / this.password.length() / this.getFonduriTotal(); // nr membrilor / lungimea parolei / fonduri;
+    }
+
+    public int getMaxNumberOfMembers() {
+        return maxNumberOfMembers;
     }
 }
 class InvestmentCompany{
